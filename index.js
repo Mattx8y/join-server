@@ -167,6 +167,7 @@ function connect(username, password, ip) {
     border: "line",
     height: "80%",
     scrollable: true,
+    alwaysScroll: true,
     valign: "bottom"
   });
   
