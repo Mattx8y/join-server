@@ -1,13 +1,8 @@
-const readline = require("readline");
+require("dotenv").config();
 
 const mineflayer = require("mineflayer");
 const chalk = require("chalk");
 const blessed = require("blessed");
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-})
 
 function parseMessage(msg) {
   let fmsg = "";
@@ -160,15 +155,19 @@ function connect(username, password, ip) {
     auth: "mojang"
   });
 
-  const screen = blessed.screen();
+  const screen = blessed.screen({
+    smartCSR: true
+  });
 
-  screen.key("C-c", function(ch, key) {
+  screen.key("C-c", function() {
     return process.exit(0);
   });
 
   const box = blessed.box({
     border: "line",
-    height: "80%"
+    height: "80%",
+    scrollable: true,
+    valign: "bottom"
   });
   
   const textbox = blessed.textbox({
@@ -181,7 +180,7 @@ function connect(username, password, ip) {
   screen.append(textbox);
 
   function write(msg) {
-    box.content += msg + "\n";
+    box.pushLine(msg);
     screen.render();
   }
 
@@ -207,11 +206,4 @@ function connect(username, password, ip) {
   textbox.readInput(handle);
 }
 
-rl.question("Username: ", function(username) {
-  rl.question("Password: ", function(password) {
-    rl.question("Server: ", function(ip) {
-      rl.close();
-      connect(username, password, ip);
-    });
-  });
-});
+connect(process.env.USER, process.env.PASS, process.env.SERVER);

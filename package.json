@@ -13,10 +13,13 @@
   "dependencies": {
     "blessed": "^0.1.81",
     "chalk": "^4.1.0",
+    "dotenv": "^8.2.0",
     "mineflayer": "^3.2.0"
   },
   "devDependencies": {
-    "@types/blessed": "^0.1.17",
-    "n": "^7.0.2"
+    "@types/blessed": "^0.1.17"
+  },
+  "optionalDependencies": {
+    "n": "^7.1.0"
   }
 }
