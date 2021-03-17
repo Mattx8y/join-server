@@ -1,2 +1,1 @@
-#run = "npm start"
-run = "bash"
+run = "npm run start:outdated"

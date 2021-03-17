@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "export N_PREFIX=$HOME/.n && n 14 && n use 14 ."
+    "start": "node .",
+    "start:outdated": "export N_PREFIX=$HOME/.n && n 14 && n use 14 ."
   },
   "keywords": [],
   "author": "",
