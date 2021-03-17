@@ -1,8 +1,29 @@
-require("dotenv").config();
-
 const mineflayer = require("mineflayer");
 const chalk = require("chalk");
 const blessed = require("blessed");
+
+const screen = blessed.screen({
+  smartCSR: true
+});
+
+const box = blessed.log({
+  border: "line",
+  height: "80%"
+});
+
+const textbox = blessed.textbox({
+  border: "line",
+  top: "80%",
+  height: "20%"
+});
+
+screen.append(box);
+screen.append(textbox);
+
+function write(msg) {
+  box.log(msg);
+  screen.render();
+}
 
 function parseMessage(msg) {
   let fmsg = "";
@@ -155,36 +176,6 @@ function connect(username, password, ip) {
     auth: "mojang"
   });
 
-  const screen = blessed.screen({
-    smartCSR: true
-  });
-
-  screen.key("C-c", function() {
-    return process.exit(0);
-  });
-
-  const box = blessed.log({
-    border: "line",
-    height: "80%"/*,
-    scrollable: true,
-    alwaysScroll: true,
-    valign: "bottom"*/
-  });
-  
-  const textbox = blessed.textbox({
-    border: "line",
-    top: "80%",
-    height: "20%"
-  });
-  
-  screen.append(box);
-  screen.append(textbox);
-
-  function write(msg) {
-    box.log(msg);
-    screen.render();
-  }
-
   user.on("kicked", msg => {
     screen.destroy();
     console.log(`Disconnected: ${parseMessage(JSON.parse(msg))}`);
@@ -215,4 +206,18 @@ function connect(username, password, ip) {
   textbox.readInput(handle);
 }
 
-connect(process.env.USER, process.env.PASS, process.env.SERVER);
+const prompt = msg => {
+  write(msg);
+  return new Promise((resolve, reject) => {
+    textbox.readInput((err, val) => {
+      if (err) return reject(err);
+      textbox.clearValue();
+      screen.render();
+      resolve(val);
+    })
+  });
+}
+
+(async function() {
+  connect(await prompt("Username:"), await prompt("Password:"), await prompt("Server:"));
+})();
