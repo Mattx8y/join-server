@@ -163,12 +163,12 @@ function connect(username, password, ip) {
     return process.exit(0);
   });
 
-  const box = blessed.box({
+  const box = blessed.log({
     border: "line",
-    height: "80%",
+    height: "80%"/*,
     scrollable: true,
     alwaysScroll: true,
-    valign: "bottom"
+    valign: "bottom"*/
   });
   
   const textbox = blessed.textbox({
@@ -181,11 +181,14 @@ function connect(username, password, ip) {
   screen.append(textbox);
 
   function write(msg) {
-    box.pushLine(msg);
+    box.log(msg);
     screen.render();
   }
 
-  user.on("kicked", msg => write(`Kicked: ${parseMessage(JSON.parse(msg))}`));
+  user.on("kicked", msg => {
+    screen.destroy();
+    console.log(`Disconnected: ${parseMessage(JSON.parse(msg))}`);
+  });
   
   user.once("spawn", () => {
     write("Logged into " + ip + " at " + user.entity.position + "\n");
@@ -197,7 +200,12 @@ function connect(username, password, ip) {
 
   function handle(err, msg) {
     if (err) throw err;
-    if (msg === "/disconnect") return process.exit(0);
+    if (msg === "/disconnect") {
+      user.end();
+      screen.destroy();
+      console.log("Disconnected");
+      return;
+    }
     user.chat(msg);
     textbox.clearValue();
     textbox.readInput(handle);
