@@ -185,17 +185,20 @@ function connect(username, password, ip) {
     write("Logged into " + ip + " at " + user.entity.position + "\n");
   });
 
-  user.on("error", console.error);
+  user.on("error", err => {
+    user.end();
+    screen.destroy();
+    throw err;
+  });
 
   user.on("message", msg => write(parseMessage(msg)));
 
   function handle(err, msg) {
-    if (err) throw err;
-    if (msg === "/disconnect") {
+    if (msg === "/disconnect" || err) {
       user.end();
       screen.destroy();
-      console.log("Disconnected");
-      return;
+      if (err) throw err;
+      return console.log("Disconnected");
     }
     user.chat(msg);
     textbox.clearValue();
